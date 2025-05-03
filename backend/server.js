@@ -49,6 +49,38 @@ app.get('/api/deodorants', async (req, res) => {
     }
 });
 
+// GET API: Retrieve all lotions
+app.get('/api/lotions', async (req, res) => {
+    try {
+        const lotions = await Lotion.find(); // Fetch all lotions from the database
+        res.json(lotions); // Send the lotions as JSON
+    } catch (error) {
+        console.error('Error fetching lotions:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// POST API: Add a new lotion
+app.post('/api/lotions', async (req, res) => {
+    try {
+        const { name, price, image, rating, description } = req.body;
+
+        // Validate the request body
+        if (!name || !price || !image || !rating || !description) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        // Create a new lotion document
+        const lotion = new Lotion({ name, price, image, rating, description });
+        await lotion.save();
+
+        res.status(201).json(lotion); // Respond with the newly created lotion
+    } catch (error) {
+        console.error('Error adding lotion:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 // Start the server
 const PORT = 3000;
 app.listen(PORT, () => {
