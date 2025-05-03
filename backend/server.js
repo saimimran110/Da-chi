@@ -7,6 +7,7 @@ const Deodorant = require('./models/Deodorant'); // Import the Deodorant model
 const Lotion = require('./models/Lotions'); // Import the Lotion model
 const Perfume = require('./models/Perfume'); // Import the Perfume model
 const Logo = require('./models/Logo');
+const cartAPI = require('./cartAPI/cartAPI');
 
 const app = express();
 const corsOptions = {
@@ -191,6 +192,10 @@ app.get('/api/trendings', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+
+//Cart api
+app.use('/api/cart', cartAPI);
 
 // Start the server
 const PORT = 3000;
