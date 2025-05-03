@@ -7,6 +7,7 @@ const lotionSchema = new mongoose.Schema({
     image: { type: String, required: true },
     rating: { type: Number, required: true },
     description: { type: String, required: true },
+    stock: { type: Number, required: true }, // Add stock field
 });
 
 // Create the model

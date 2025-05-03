@@ -41,16 +41,16 @@ app.get('/', (req, res) => {
 // POST API: Add a new deodorant
 app.post('/api/deodorants', upload.single('image'), async (req, res) => {
     try {
-        const { name, price, rating, description } = req.body;
+        const { name, price, rating, description, stock } = req.body;
         const image = req.file ? `/uploads/${req.file.filename}` : null; // Save the image path
 
         // Validate the request body
-        if (!name || !image || !price || !rating || !description) {
+        if (!name || !price || !image || !rating || !description || !stock) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
         // Create a new deodorant document
-        const deodorant = new Deodorant({ name, image, price, rating, description });
+        const deodorant = new Deodorant({ name, price, image, rating, description, stock });
         await deodorant.save();
 
         res.status(201).json(deodorant); // Respond with the newly created deodorant
@@ -74,16 +74,16 @@ app.get('/api/deodorants', async (req, res) => {
 // POST API: Add a new lotion
 app.post('/api/lotions', upload.single('image'), async (req, res) => {
     try {
-        const { name, price, rating, description } = req.body;
+        const { name, price, rating, description, stock } = req.body;
         const image = req.file ? `/uploads/${req.file.filename}` : null; // Save the image path
 
         // Validate the request body
-        if (!name || !price || !image || !rating || !description) {
+        if (!name || !price || !image || !rating || !description || !stock) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
         // Create a new lotion document
-        const lotion = new Lotion({ name, price, image, rating, description });
+        const lotion = new Lotion({ name, price, image, rating, description, stock });
         await lotion.save();
 
         res.status(201).json(lotion); // Respond with the newly created lotion
@@ -107,19 +107,17 @@ app.get('/api/lotions', async (req, res) => {
 // POST API: Add a new perfume
 app.post('/api/perfumes', upload.single('image'), async (req, res) => {
     try {
-        const { name, price, rating, description } = req.body;
-        const image = req.file ? `/uploads/${req.file.filename}` : null; // Save the image path
+        const { name, price, rating, description, stock } = req.body;
+        const image = req.file ? `/uploads/${req.file.filename}` : null;
 
-        // Validate the request body
-        if (!name || !price || !rating || !description || !image) {
+        if (!name || !price || !rating || !description || !image || !stock) {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
-        // Create a new perfume document
-        const perfume = new Perfume({ name, image, price, rating, description });
+        const perfume = new Perfume({ name, image, price, rating, description, stock });
         await perfume.save();
 
-        res.status(201).json(perfume); // Respond with the newly created perfume
+        res.status(201).json(perfume);
     } catch (error) {
         console.error('Error adding perfume:', error);
         res.status(500).json({ message: 'Internal server error' });

@@ -1,7 +1,9 @@
 const express = require('express');
 const Cart = require('../models/Cart'); // Import the Cart model
 const router = express.Router();
-
+const Deodorant = require('../models/Deodorant'); // Import the Deodorant model
+const Lotion = require('../models/Lotions'); // Import the Lotion model
+const Perfume = require('../models/Perfume'); // Import the Perfume model
 // GET API: Retrieve the cart for a user
 router.get('/:userId', async (req, res) => {
     try {
@@ -28,6 +30,19 @@ router.post('/:userId', async (req, res) => {
         const { userId } = req.params;
         const { productId, name, image, price, rating, description } = req.body;
 
+        // Fetch the product to check stock
+        const product = await Perfume.findById(productId) || 
+                        await Deodorant.findById(productId) || 
+                        await Lotion.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        if (product.stock < 1) {
+            return res.status(400).json({ message: 'Product is out of stock' });
+        }
+
         let cart = await Cart.findOne({ userId });
         if (!cart) {
             cart = new Cart({ userId, items: [] });
@@ -35,11 +50,12 @@ router.post('/:userId', async (req, res) => {
 
         const existingItem = cart.items.find((item) => item.productId.toString() === productId);
         if (existingItem) {
-            // Update quantity and total price
+            if (existingItem.quantity + 1 > product.stock) {
+                return res.status(400).json({ message: 'Not enough stock available' });
+            }
             existingItem.quantity += 1;
             existingItem.totalPrice = existingItem.quantity * existingItem.price;
         } else {
-            // Add new product to the cart
             cart.items.push({
                 productId,
                 name,
@@ -83,7 +99,7 @@ router.delete('/:userId/:productId', async (req, res) => {
 router.put('/:userId/:productId', async (req, res) => {
     try {
         const { userId, productId } = req.params;
-        const { mode } = req.body; // Mode can be 'increment' or 'decrement'
+        const { mode } = req.body;
 
         const cart = await Cart.findOne({ userId });
         if (!cart) {
@@ -91,27 +107,35 @@ router.put('/:userId/:productId', async (req, res) => {
         }
 
         const item = cart.items.find((item) => item.productId.toString() === productId);
-        if (item) {
-            if (mode === 'increment') {
-                // Increment quantity
-                item.quantity += 1;
-            } else if (mode === 'decrement') {
-                // Decrement quantity, but ensure it doesn't go below 1
-                if (item.quantity > 1) {
-                    item.quantity -= 1;
-                } else {
-                    return res.status(400).json({ message: 'Quantity cannot be less than 1' });
-                }
-            } else {
-                return res.status(400).json({ message: 'Invalid mode. Use "increment" or "decrement".' });
-            }
-
-            // Update total price
-            item.totalPrice = item.quantity * item.price;
-        } else {
+        if (!item) {
             return res.status(404).json({ message: 'Product not found in cart' });
         }
 
+        // Fetch the product to check stock
+        const product = await Perfume.findById(productId) || 
+                        await Deodorant.findById(productId) || 
+                        await Lotion.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        if (mode === 'increment') {
+            if (item.quantity + 1 > product.stock) {
+                return res.status(400).json({ message: 'Not enough stock available' });
+            }
+            item.quantity += 1;
+        } else if (mode === 'decrement') {
+            if (item.quantity > 1) {
+                item.quantity -= 1;
+            } else {
+                return res.status(400).json({ message: 'Quantity cannot be less than 1' });
+            }
+        } else {
+            return res.status(400).json({ message: 'Invalid mode. Use "increment" or "decrement".' });
+        }
+
+        item.totalPrice = item.quantity * item.price;
         await cart.save();
         res.json(cart);
     } catch (error) {
