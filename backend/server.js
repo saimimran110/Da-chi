@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./db'); // Import the database connection function
 const Deodorant = require('./models/Deodorant'); // Import the Deodorant model
-
+const Lotion = require('./models/Lotions'); // Import the Lotion model
 const app = express();
 const corsOptions = {
     origin: 'http://localhost:5173',
