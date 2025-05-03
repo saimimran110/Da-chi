@@ -6,6 +6,7 @@ const connectDB = require('./db'); // Import the database connection function
 const Deodorant = require('./models/Deodorant'); // Import the Deodorant model
 const Lotion = require('./models/Lotions'); // Import the Lotion model
 const Perfume = require('./models/Perfume'); // Import the Perfume model
+const Logo = require('./models/Logo');
 
 const app = express();
 const corsOptions = {
@@ -131,6 +132,41 @@ app.get('/api/perfumes', async (req, res) => {
         res.json(perfumes); // Send the perfumes as JSON
     } catch (error) {
         console.error('Error fetching perfumes:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// POST API: Upload a new logo
+app.post('/api/logo', upload.single('image'), async (req, res) => {
+    try {
+        const image = req.file ? `/uploads/${req.file.filename}` : null; // Save the image path
+
+        // Validate the request body
+        if (!image) {
+            return res.status(400).json({ message: 'Logo image is required' });
+        }
+
+        // Create a new logo document
+        const logo = new Logo({ image });
+        await logo.save();
+
+        res.status(201).json(logo); // Respond with the newly created logo
+    } catch (error) {
+        console.error('Error uploading logo:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// GET API: Retrieve the logo
+app.get('/api/logo', async (req, res) => {
+    try {
+        const logo = await Logo.findOne(); // Fetch the first logo document from the database
+        if (!logo) {
+            return res.status(404).json({ message: 'Logo not found' });
+        }
+        res.json(logo); // Send the logo as JSON
+    } catch (error) {
+        console.error('Error fetching logo:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
