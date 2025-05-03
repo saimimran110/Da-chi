@@ -1,8 +1,12 @@
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer'); // Import multer for file uploads
+const path = require('path');
 const connectDB = require('./db'); // Import the database connection function
 const Deodorant = require('./models/Deodorant'); // Import the Deodorant model
 const Lotion = require('./models/Lotions'); // Import the Lotion model
+const Perfume = require('./models/Perfume'); // Import the Perfume model
+
 const app = express();
 const corsOptions = {
     origin: 'http://localhost:5173',
@@ -11,16 +15,32 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json()); // Middleware to parse JSON request bodies
 
+// Set up multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Save files to the 'uploads' folder
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`); // Save with a unique name
+    },
+});
+const upload = multer({ storage });
+
+// Serve static files from the 'uploads' folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Connect to MongoDB
 connectDB();
-app.get('/', (req, res) => {    
+
+app.get('/', (req, res) => {
     res.send('API is running...'); // Simple message to indicate the server is running
-}   );
+});
 
 // POST API: Add a new deodorant
-app.post('/api/deodorants', async (req, res) => {
+app.post('/api/deodorants', upload.single('image'), async (req, res) => {
     try {
-        const { name, image, price, rating, description } = req.body;
+        const { name, price, rating, description } = req.body;
+        const image = req.file ? `/uploads/${req.file.filename}` : null; // Save the image path
 
         // Validate the request body
         if (!name || !image || !price || !rating || !description) {
@@ -49,21 +69,11 @@ app.get('/api/deodorants', async (req, res) => {
     }
 });
 
-// GET API: Retrieve all lotions
-app.get('/api/lotions', async (req, res) => {
-    try {
-        const lotions = await Lotion.find(); // Fetch all lotions from the database
-        res.json(lotions); // Send the lotions as JSON
-    } catch (error) {
-        console.error('Error fetching lotions:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
 // POST API: Add a new lotion
-app.post('/api/lotions', async (req, res) => {
+app.post('/api/lotions', upload.single('image'), async (req, res) => {
     try {
-        const { name, price, image, rating, description } = req.body;
+        const { name, price, rating, description } = req.body;
+        const image = req.file ? `/uploads/${req.file.filename}` : null; // Save the image path
 
         // Validate the request body
         if (!name || !price || !image || !rating || !description) {
@@ -77,6 +87,50 @@ app.post('/api/lotions', async (req, res) => {
         res.status(201).json(lotion); // Respond with the newly created lotion
     } catch (error) {
         console.error('Error adding lotion:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// GET API: Retrieve all lotions
+app.get('/api/lotions', async (req, res) => {
+    try {
+        const lotions = await Lotion.find(); // Fetch all lotions from the database
+        res.json(lotions); // Send the lotions as JSON
+    } catch (error) {
+        console.error('Error fetching lotions:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// POST API: Add a new perfume
+app.post('/api/perfumes', upload.single('image'), async (req, res) => {
+    try {
+        const { name, price, rating, description } = req.body;
+        const image = req.file ? `/uploads/${req.file.filename}` : null; // Save the image path
+
+        // Validate the request body
+        if (!name || !price || !rating || !description || !image) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        // Create a new perfume document
+        const perfume = new Perfume({ name, image, price, rating, description });
+        await perfume.save();
+
+        res.status(201).json(perfume); // Respond with the newly created perfume
+    } catch (error) {
+        console.error('Error adding perfume:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// GET API: Retrieve all perfumes
+app.get('/api/perfumes', async (req, res) => {
+    try {
+        const perfumes = await Perfume.find(); // Fetch all perfumes from the database
+        res.json(perfumes); // Send the perfumes as JSON
+    } catch (error) {
+        console.error('Error fetching perfumes:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
