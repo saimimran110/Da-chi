@@ -7,9 +7,10 @@ const Deodorant = require('./models/Deodorant'); // Import the Deodorant model
 const Lotion = require('./models/Lotions'); // Import the Lotion model
 const Perfume = require('./models/Perfume'); // Import the Perfume model
 const Logo = require('./models/Logo');
-const cartAPI = require('./cartAPI/cartAPI');
+const cartAPI = require('./routes/cartAPI');
 const Order = require('./models/order'); // Import the Order model
 const Cart = require('./models/Cart'); // Import the Cart model
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const corsOptions = {
@@ -35,7 +36,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB
 connectDB();
-
+//test api
 app.get('/', (req, res) => {
     res.send('API is running...'); // Simple message to indicate the server is running
 });
@@ -317,7 +318,8 @@ app.post('/api/submit-order', async (req, res) => {
 
 //Cart api
 app.use('/api/cart', cartAPI);
-
+// Auth routes
+app.use('/api/auth', authRoutes);
 // Start the server
 const PORT = 3000;
 app.listen(PORT, () => {
