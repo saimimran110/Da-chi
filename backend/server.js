@@ -170,6 +170,27 @@ app.get('/api/logo', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+// GET API: Retrieve trending products
+app.get('/api/trendings', async (req, res) => {
+    try {
+        // Fetch products with a rating of 4.5 or above
+        const perfumes = await Perfume.find({ rating: { $gte: 4.5 } });
+        const deodorants = await Deodorant.find({ rating: { $gte: 4.5 } });
+        const lotions = await Lotion.find({ rating: { $gte: 4.5 } });
+
+        // Create the response object
+        const trendingProducts = {
+            PERFUMES: perfumes,
+            DEODORANTS: deodorants,
+            LOTIONS: lotions,
+        };
+
+        res.json(trendingProducts); // Send the trending products as JSON
+    } catch (error) {
+        console.error('Error fetching trending products:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 // Start the server
 const PORT = 3000;
