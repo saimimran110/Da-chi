@@ -47,8 +47,7 @@ Welcome to *Da-Chi Fragrance Store*, an e-commerce platform for perfumes, lotion
 
 ## 📂 Project Structure
 
-### Frontend
-backend/ ├── models/ # Mongoose models ├── routes/ # API routes ├── utils/ # Utility functions ├── server.js # Main server file ├── package.json # Backend dependencies └── .env # Environment variables
+<pre><code>📦 project-root ├── 📁 backend │ ├── 📁 middleware │ ├── 📁 models │ ├── 📁 node_modules │ ├── 📁 routes │ ├── 📁 uploads │ ├── 📁 utils │ ├── 📄 .env │ ├── 📄 .gitignore │ ├── 📄 db.js │ ├── 📄 package-lock.json │ ├── 📄 package.json │ └── 📄 server.js │ ├── 📁 frontend │ ├── 📁 node_modules │ ├── 📁 public │ ├── 📁 src │ ├── 📄 .gitignore │ ├── 📄 bun.lockb │ ├── 📄 components.json │ ├── 📄 eslint.config.js │ ├── 📄 index.html │ ├── 📄 package-lock.json │ ├── 📄 package.json │ ├── 📄 postcss.config.js │ ├── 📄 README.md │ ├── 📄 tailwind.config.ts │ ├── 📄 tsconfig.app.json │ ├── 📄 tsconfig.json │ ├── 📄 tsconfig.node.json │ ├── 📄 vite.config.ts │ ├── 📄 package-lock.json │ ├── 📄 package.json │ └── 📄 README.md </code></pre>
 ---
 
 ## 🖥 Setup Instructions
