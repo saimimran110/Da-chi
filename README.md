@@ -62,3 +62,16 @@ backend/ ├── models/ # Mongoose models ├── routes/ # API routes ├�
 1. Clone the repository:
    ```bash
    git clone <YOUR_REPOSITORY_URL>
+
+2. cd Web_Project
+
+3. `cd frontend && npm install`
+   `cd ../backend && npm install`
+4. In .env
+    `MONGO_URI=<YOUR_MONGO_DB_CONNECTION_STING>`
+    `PORT=3000`
+5. `cd backend`
+   `npm start`
+6. `cd ../frontend`
+   `npm run dev`
+7. `http://localhost:5173`
