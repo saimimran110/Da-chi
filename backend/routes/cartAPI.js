@@ -28,7 +28,7 @@ router.get('/:userId', async (req, res) => {
 router.post('/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-        const { productId, name, image, price, rating, description } = req.body;
+        const { productId, name, image, price, rating, description,quantity } = req.body;
 
         // Fetch the product to check stock
         const product = await Perfume.findById(productId) || 
@@ -63,7 +63,7 @@ router.post('/:userId', async (req, res) => {
                 price,
                 rating,
                 description,
-                quantity: 1,
+                quantity: quantity,
                 totalPrice: price,
             });
         }
@@ -143,5 +143,34 @@ router.put('/:userId/:productId', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+// router.delete('/clear/:userId', async (req, res) => {
+//   let { userId } = req.params;  
+//   console.log("Received userId:", userId);
 
+//   try {
+//     // Trim any extra spaces or characters from the userId
+//     userId = userId.trim();
+//     console.log("Sanitized userId:", userId);
+
+//     // Use a regex to find the user's cart, ignoring trailing characters
+//     let cart = await Cart.findOne({ userId: { $regex: `^${userId}`, $options: 'i' } });
+//     console.log("Cart found:", cart);
+
+//     // If the cart does not exist, return a success response with an empty cart
+//     if (!cart) {
+//       return res.status(404).json({ message: 'Cart not found' });
+//     }
+
+//     // Clear all items in the cart
+//     cart.items = [];
+
+//     // Save the updated cart
+//     await cart.save();
+
+//     res.status(200).json({ message: 'Cart cleared successfully', cart });
+//   } catch (error) {
+//     console.error('Error clearing cart:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
 module.exports = router;

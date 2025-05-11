@@ -5,6 +5,7 @@ const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Register a new user
+//api/auth/register
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 

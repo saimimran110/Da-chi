@@ -11,6 +11,8 @@ const cartAPI = require('./routes/cartAPI');
 const Order = require('./models/order'); // Import the Order model
 const Cart = require('./models/Cart'); // Import the Cart model
 const authRoutes = require('./routes/authRoutes');
+const searchRoutes = require('./routes/searchRoutes'); // Import the search routes
+
 
 const app = express();
 const corsOptions = {
@@ -130,7 +132,7 @@ app.post('/api/perfumes', upload.single('image'), async (req, res) => {
 // GET API: Retrieve all perfumes
 app.get('/api/perfumes', async (req, res) => {
     try {
-        const perfumes = await Perfume.find(); // Fetch all perfumes from the database
+        const perfumes = await Perfume.find(); 
         res.json(perfumes); // Send the perfumes as JSON
     } catch (error) {
         console.error('Error fetching perfumes:', error);
@@ -173,6 +175,8 @@ app.get('/api/logo', async (req, res) => {
     }
 });
 // GET API: Retrieve trending products
+
+
 app.get('/api/trendings', async (req, res) => {
     try {
         // Fetch products with a rating of 4.5 or above
@@ -217,7 +221,6 @@ app.get('/api/orders/:userId', async (req, res) => {
 app.post('/api/orders/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-
         // Find the user's cart
         const cart = await Cart.findOne({ userId });
         if (!cart || cart.items.length === 0) {
@@ -315,7 +318,7 @@ app.post('/api/submit-order', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
-
+app.use('/api', searchRoutes);//search
 //Cart api
 app.use('/api/cart', cartAPI);
 // Auth routes
